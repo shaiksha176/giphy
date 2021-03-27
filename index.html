@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search GIF</title>
+    <style>
+        body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+
+        .grid {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+
+        img {
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 4rem;
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        input {
+            width: 60%;
+            display: block;
+            margin: 0 auto 1.5rem auto;
+            font-size: 1.12rem;
+            padding: 10px 18px;
+            border: 2px solid rgba(0, 0, 0, 0.9);
+            border-radius: 5px;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        @media screen and (max-width : 700px) {
+            body {
+                overflow-x: hidden;
+                width: 100%;
+                margin: 0 auto;
+            }
+
+            input {
+                width: 80%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .grid {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Search for GIFS</h1>
+
+    <input type="text" name="" id="search" onkeyup="searchGIF()">
+
+    <div class="grid" id="macy-container">
+
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/macy@2"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+        let grid = document.querySelector('#macy-container')
+        var macy = Macy({
+            container: '#macy-container',
+            trueOrder: false,
+            waitForImages: false,
+            margin: 10,
+            columns: 4,
+            breakAt: {
+                1200: 5,
+                940: 3,
+                520: 2,
+                400: 2
+            }
+        });
+
+        const searchGIF = () => {
+
+            let response = []
+            let searchval = document.querySelector("#search").value
+            axios.get(`https://api.giphy.com/v1/gifs/search?api_key=No6NQKtxvkzmYU0f987CW4QikAIGFljK&q=${searchval}&limit=50&offset=0&rating=g&lang=en`)
+                .then(res => {
+                    // console.log(res.data.data[0].images)
+                    console.log(res.data)
+                    response = res.data.data
+
+                    grid.innerHTML = ''
+                })
+                .then(() => {
+                    response.forEach(element => {
+                        //console.log(element.images["480w_still"].url)
+                        grid.innerHTML += `
+                                           <div class="grid-item">
+                            <img src=${element.images["480w_still"].url} alt="">
+                        </div>
+                                        `
+                        //macy.recalculate();
+                        macy.runOnImageLoad(function () {
+                            macy.recalculate(true);
+                        }, true);
+                    })
+                })
+
+        }
+    </script>
+</body>
+
+</html>
